@@ -25,8 +25,12 @@ public class Cuota {
         this.fechaPago = fechaPago;
         this.activo = activo;
     }
-    public Cuota(int idPrestamo, int numero, double monto, LocalDate fechaVencimiento) {
 
+    public Cuota(int idPrestamo, int numero, double monto, LocalDate fechaVencimiento) {
+        this.idPrestamo = idPrestamo;
+        this.numero = numero;
+        this.monto = monto;
+        this.fechaVencimiento = fechaVencimiento;
     }
 
     public void registrarPago(LocalDate fecha) {

@@ -64,22 +64,11 @@ public abstract class Empleado extends Persona {
 
     @Override
     public String toString() {
-        return "Empleado{" +
+        return super.toString()+
                 "usuario='" + usuario + '\'' +
                 ", contraseña='" + contraseña + '\'' +
                 ", sueldoBase=" + sueldoBase +
                 '}';
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (!(o instanceof Empleado empleado)) return false;
-        if (!super.equals(o)) return false;
-        return Objects.equals(contraseña, empleado.contraseña);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), contraseña);
-    }
 }

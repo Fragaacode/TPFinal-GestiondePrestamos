@@ -12,7 +12,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ClienteDAO implements DAO {
+public class ClienteDAO implements DAO<Cliente>{
 
 public int insertar(Cliente cliente)throws SQLException
 {
@@ -98,6 +98,7 @@ public boolean DardeBaja(Cliente cliente)throws SQLException
         PreparedStatement ps = c.prepareStatement(sql))
     {
         ps.setBoolean(1,false);
+        ps.setInt(2,cliente.getId());
 
         return ps.executeUpdate()>0;
     }

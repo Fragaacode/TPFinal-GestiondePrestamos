@@ -5,11 +5,15 @@ import java.util.List;
 
 public interface DAO <T> {
 
-void insertar(T e)throws SQLException;
+int insertar(T e)throws SQLException;
 
-void modificar(T e)throws SQLException;
+boolean modificar(T e)throws SQLException;
 
-void DardeBaja(T e)throws SQLException;
+boolean DardeBaja(T e)throws SQLException;
+
+boolean reactivar(T e)throws SQLException;
+
+boolean eliminar(T e)throws SQLException;
 
 List<T> listar()throws SQLException;
 }

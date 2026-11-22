@@ -9,7 +9,7 @@ public class ConexionBD {
     private static final String user="";
     private static final String password="";
 
-    public Connection conectar()throws SQLException
+    public static Connection conectar()throws SQLException
     {
         return DriverManager.getConnection(url,user,password);
     }

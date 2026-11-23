@@ -49,7 +49,7 @@ public int insertar(Cliente cliente)throws SQLException
 
 public boolean modificar(Cliente cliente)throws SQLException
 {
-    String sql="UPDATE cliente SET telefono=?,mail=?,direccion=? WHERE id=?";
+    String sql="UPDATE cliente SET telefono=?,email=?,direccion=? WHERE id=?";
 
     try(Connection c = ConexionBD.conectar();
     PreparedStatement ps = c.prepareStatement(sql))
@@ -57,6 +57,7 @@ public boolean modificar(Cliente cliente)throws SQLException
         ps.setString(1,cliente.getTelefono());
         ps.setString(2,cliente.getEmail());
         ps.setString(3,cliente.getDireccion());
+        ps.setInt(4,cliente.getId());
 
         return ps.executeUpdate()>0;
     }
@@ -112,6 +113,7 @@ public boolean reactivar(Cliente cliente)throws SQLException
             PreparedStatement ps = c.prepareStatement(sql))
         {
             ps.setBoolean(1,true);
+            ps.setInt(2,cliente.getId());
 
             return ps.executeUpdate()>0;
         }

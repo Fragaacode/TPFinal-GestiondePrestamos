@@ -21,7 +21,7 @@ private int cantidadSolicitudes;
     public Asesor(String nombre, String apellido, String dni, String usuario, String contraseña, double sueldoBase, double comision, int cantidadSolicitudes) {
         super(nombre, apellido, dni, usuario, contraseña, sueldoBase);
         this.comision = comision;
-        this.cantidadSolicitudes = cantidadSolicitudes;
+        this.cantidadSolicitudes = 0;
     }
 
     public void registrarSolicitud() {

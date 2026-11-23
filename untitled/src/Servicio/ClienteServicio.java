@@ -124,6 +124,8 @@ public class ClienteServicio {
 
         todos.addAll(clientes);
 
+        return todos;
+
     }
 
 
@@ -146,5 +148,6 @@ public class ClienteServicio {
                 return c;
             }
         }
+        return null;
     }
 }

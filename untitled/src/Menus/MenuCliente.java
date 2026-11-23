@@ -5,6 +5,8 @@ import Servicio.ClienteServicio;
 import Servicio.PrestamoServicio;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class MenuCliente {
@@ -40,43 +42,57 @@ Scanner sc = new Scanner(System.in);
                 {
                     case 1:
                     {
+                        ingresar();
                         break;
                     }
                     case 2:
                     {
-
+                        modificar();
+                        break;
                     }
                     case 3:
                     {
+                        DardeBaja();
                         break;
                     }
                     case 4:
                     {
-
+                        reactivar();
+                        break;
                     }
                     case 5:
                     {
+                        listar();
                         break;
                     }
                     case 6:
                     {
-
+                        listarActivos();
+                        break;
                     }
                     case 7:
                     {
+                        listarInactivos();
                         break;
                     }
                     case 8:
                     {
-
+                        historial();
+                        break;
                     }
                     case 9:
                     {
+                        eliminar();
                         break;
                     }
                     case 0:
                     {
-
+                        opcion=0;
+                        break;
+                    }
+                    default:
+                    {
+                        System.out.println("Opcion invalida");
                     }
                 }
 
@@ -84,8 +100,92 @@ Scanner sc = new Scanner(System.in);
             }
             catch (SQLException e)
             {
-
+                System.err.println("Error con la Bdd "+ e.getMessage());
             }
         }
     }
+
+    public void ingresar()throws SQLException
+    {
+        String nombre = Consola.leerTexto("Nombre: ");
+        String apellido = Consola.leerTexto("Apellido: ");
+        String dni = Consola.leerTexto("DNI (sin puntos): ");
+        String telefono = Consola.leerTexto("Teléfono: ");
+        String email = Consola.leerTexto("Email: ");
+        String direccion = Consola.leerTexto("Dirección: ");
+        Cliente nuevo = new Cliente (nombre, apellido, dni, telefono, email, direccion);
+        nuevo= servicio.ingresar(nuevo);
+        System.out.println("Cliente creado con id " + nuevo.getId());
+    }
+
+    public void modificar()throws SQLException
+    {
+        Cliente modificado=servicio.buscarDni(Consola.leerTexto("Ingrese el DNI del cliente que desea modificar"));
+        System.out.println("Ponga Enter si no quiere cambiar el campo:");
+        Consola.cambiarTexto("Nombre", modificado.getNombre());
+        Consola.cambiarTexto("Apellido", modificado.getApellido());
+        Consola.cambiarTexto("Teléfono", modificado.getTelefono());
+        Consola.cambiarTexto("Email", modificado.getEmail());
+        Consola.cambiarTexto("Dirección", modificado.getDireccion());
+        boolean modificado2= servicio.modificar(modificado);
+        if(modificado2)
+        {
+            System.out.println("Cliente modificado.");
+        }
+    }
+
+    public void DardeBaja()throws SQLException
+    {
+
+        listarActivos();
+        Cliente bajar =servicio.buscarDni(Consola.leerTexto("Ingrese el DNI del cliente que desee dar de baja"));
+       boolean bajo= servicio.baja(bajar.getId());
+
+       if(bajo)
+       {
+           System.out.println("Cliente dado de baja");
+       }
+    }
+
+    public void reactivar()throws SQLException
+    {
+        listarInactivos();
+        Cliente activar = servicio.buscarDni(Consola.leerTexto("Ingrese el DNI del cliente que desee reactivar"));
+        boolean reactivo= servicio.reactivar(activar.getId());
+
+        if(reactivo)
+        {
+            System.out.println("Cliente reactivado");
+        }
+    }
+
+    public void listar()
+    {
+        List<Cliente> todos= servicio.listacompleta();
+        Consola.mostrarLista(todos);
+    }
+
+    public void listarActivos()
+    {
+        List<Cliente> activos= servicio.listaactiva();
+        Consola.mostrarLista(activos);
+    }
+
+    public void listarInactivos()
+    {
+        List<Cliente> inactivos= servicio.listainactiva();
+        Consola.mostrarLista(inactivos);
+    }
+
+    public void historial()
+    {
+        ///HACER METODO EN PRESTAMOSERVICIO
+    }
+
+    public void eliminar()
+    {
+
+    }
+
+
 }

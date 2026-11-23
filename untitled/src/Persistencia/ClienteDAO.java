@@ -49,15 +49,17 @@ public int insertar(Cliente cliente)throws SQLException
 
 public boolean modificar(Cliente cliente)throws SQLException
 {
-    String sql="UPDATE cliente SET telefono=?,email=?,direccion=? WHERE id=?";
+    String sql="UPDATE cliente SET nombre=?,apellido=? telefono=?,email=?,direccion=? WHERE id=?";
 
     try(Connection c = ConexionBD.conectar();
     PreparedStatement ps = c.prepareStatement(sql))
     {
-        ps.setString(1,cliente.getTelefono());
-        ps.setString(2,cliente.getEmail());
-        ps.setString(3,cliente.getDireccion());
-        ps.setInt(4,cliente.getId());
+        ps.setString(1,cliente.getNombre());
+        ps.setString(2,cliente.getApellido());
+        ps.setString(3,cliente.getTelefono());
+        ps.setString(4,cliente.getEmail());
+        ps.setString(5,cliente.getDireccion());
+        ps.setInt(6,cliente.getId());
 
         return ps.executeUpdate()>0;
     }

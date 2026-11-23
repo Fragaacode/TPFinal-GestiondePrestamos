@@ -53,7 +53,7 @@ public class ClienteServicio {
         return c;
     }
 
-    public void modificar(Cliente c)throws SQLException
+    public boolean modificar(Cliente c)throws SQLException
     {///Exceptcion personalizada agregar-----------------------------------------------------------------
         Validaciones.Vacio(c.getNombre(),"Nombre");
         Validaciones.Vacio(c.getApellido(),"Apellido");
@@ -76,7 +76,7 @@ public class ClienteServicio {
 
     }
 
-    public void baja(int id)throws SQLException
+    public boolean baja(int id)throws SQLException
     {///Exceptcion personalizada agregar-----------------------------------------------------------------
         Cliente bajar = buscarId(id);
         if (dao.DardeBaja(bajar)) {
@@ -84,7 +84,7 @@ public class ClienteServicio {
         }
     }
 
-    public void reactivar(int id)throws SQLException
+    public boolean reactivar(int id)throws SQLException
     {///Exceptcion personalizada agregar-----------------------------------------------------------------
         Cliente activar = buscarId(id);
         if (dao.reactivar(activar)) {

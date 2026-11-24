@@ -12,7 +12,7 @@ public class CuotaDAO implements DAO<Cuota> {
 
     public int insertar(Cuota cuota)throws SQLException
     {
-        String sql="INSERT INTO cuota (id_prestamo,numero,monto,fechaVenciomento,pagada,fechaPago,activo)";
+        String sql="INSERT INTO cuota (id_prestamo,numero,monto,fechaVenciomento,pagada,fechaPago,activo) VALUES(?,?,?,?,?,?,TRUE)";
         String sqlid="SELECT LAST_INSERT_ID()";
 
         try(Connection c = ConexionBD.conectar();
@@ -40,7 +40,7 @@ public class CuotaDAO implements DAO<Cuota> {
 
     public boolean modificar(Cuota cuota)throws SQLException
     {
-        String sql = "UPDATE cuota SET monto = ?, fecha_vencimiento = ?, pagada = ?, fecha_pago = ? WHERE id_cuota = ?";
+        String sql = "UPDATE cuota SET monto = ?, fechaVenciomento = ?, pagada = ?, fechaPago = ? WHERE id_cuota = ?";
         try (Connection con = ConexionBD.conectar();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setDouble(1, cuota.getMonto());
@@ -96,13 +96,13 @@ public class CuotaDAO implements DAO<Cuota> {
              PreparedStatement ps = con.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
-                Date fechaPago = rs.getDate("fecha_pago");
+                Date fechaPago = rs.getDate("fechaPago");
                 Cuota cuota = new Cuota(
                         rs.getInt("id_cuota"),
                         rs.getInt("id_prestamo"),
                         rs.getInt("numero"),
                         rs.getDouble("monto"),
-                        rs.getDate("fecha_vencimiento").toLocalDate(),
+                        rs.getDate("fechaVenciomento").toLocalDate(),
                         rs.getBoolean("pagada"),
                         fechaPago != null ? fechaPago.toLocalDate() : null,
                         rs.getBoolean("activo"));

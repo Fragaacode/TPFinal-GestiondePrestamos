@@ -22,7 +22,7 @@ public class EmpleadoDAO implements DAO<Empleado> {
 
     @Override
     public int insertar(Empleado empleado) throws SQLException {
-        String sql="INSERT INTO empleado (nombre,apellido,dni,usuario,contraseña,sueldoBase,rol,cantSolicitudes,activo) VALUES (?,?,?,?,?,?,?,?,TRUE)";
+        String sql="INSERT INTO empleado (nombre,apellido,dni,usuario,contraseña,sueldoBase,rol,cantidadSolicitudes,activo) VALUES (?,?,?,?,?,?,?,?,TRUE)";
         String sqlid="SELECT LAST_INSERT_ID()";
 
         try (Connection con = ConexionBD.conectar();
@@ -62,7 +62,7 @@ public class EmpleadoDAO implements DAO<Empleado> {
     @Override
     public boolean modificar(Empleado empleado) throws SQLException {
         String sql = "UPDATE empleado SET nombre = ?, apellido = ?, contraseña = ?, sueldoBase = ?, " +
-                "cantidad_solicitudes = ? WHERE id_empleado = ?";
+                "cantidadSolicitudes = ? WHERE id_empleado = ?";
         try (Connection con = ConexionBD.conectar();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, empleado.getNombre());

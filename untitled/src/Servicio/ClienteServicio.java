@@ -72,7 +72,9 @@ public class ClienteServicio {
                     clientes.set(i,c);
                 }
             }
+            return true;
         }
+        return false;
 
     }
 
@@ -81,7 +83,9 @@ public class ClienteServicio {
         Cliente bajar = buscarId(id);
         if (dao.DardeBaja(bajar)) {
             bajar.setActivo(false);
+            return true;
         }
+        return false;
     }
 
     public boolean reactivar(int id)throws SQLException
@@ -89,10 +93,12 @@ public class ClienteServicio {
         Cliente activar = buscarId(id);
         if (dao.reactivar(activar)) {
             activar.setActivo(true);
+            return true;
         }
+        return false;
     }
 
-    public boolean eliminar(int id)
+    public boolean eliminar(int id)throws SQLException
     {
         Cliente sacar = buscarId(id);
         boolean eliminado =dao.eliminar(sacar);

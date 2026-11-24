@@ -49,7 +49,7 @@ public int insertar(Cliente cliente)throws SQLException
 
 public boolean modificar(Cliente cliente)throws SQLException
 {
-    String sql="UPDATE cliente SET nombre=?,apellido=? telefono=?,email=?,direccion=? WHERE id=?";
+    String sql="UPDATE clientes SET nombre=?,apellido=?,telefono=?,email=?,direccion=? WHERE id=?";
 
     try(Connection c = ConexionBD.conectar();
     PreparedStatement ps = c.prepareStatement(sql))
@@ -96,7 +96,7 @@ return clientes;
 
 public boolean DardeBaja(Cliente cliente)throws SQLException
 {
-    String sql="UPDATE cliente SET activo=? WHERE id=?";
+    String sql="UPDATE clientes SET activo=? WHERE id=?";
     try(Connection c = ConexionBD.conectar();
         PreparedStatement ps = c.prepareStatement(sql))
     {
@@ -110,7 +110,7 @@ public boolean DardeBaja(Cliente cliente)throws SQLException
 
 public boolean reactivar(Cliente cliente)throws SQLException
     {
-        String sql="UPDATE cliente SET activo=? WHERE id=?";
+        String sql="UPDATE clientes SET activo=? WHERE id=?";
         try(Connection c = ConexionBD.conectar();
             PreparedStatement ps = c.prepareStatement(sql))
         {

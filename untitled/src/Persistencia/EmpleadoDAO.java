@@ -61,8 +61,7 @@ public class EmpleadoDAO implements DAO<Empleado> {
 
     @Override
     public boolean modificar(Empleado empleado) throws SQLException {
-        String sql = "UPDATE empleado SET nombre = ?, apellido = ?, contraseña = ?, sueldoBase = ?, " +
-                "cantidadSolicitudes = ? WHERE id_empleado = ?";
+        String sql = "UPDATE empleado SET nombre = ?, apellido = ?, contraseña = ?, sueldoBase = ?,cantidadSolicitudes = ? WHERE id_empleado = ?";
         try (Connection con = ConexionBD.conectar();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, empleado.getNombre());

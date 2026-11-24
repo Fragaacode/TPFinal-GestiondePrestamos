@@ -184,7 +184,13 @@ Scanner sc = new Scanner(System.in);
 
     public void eliminar()
     {
-
+        listar();
+        int id= Consola.leerentero("Ingrese el id del cliente que desea eliminar definitivamente");
+        boolean eliminado= servicio.eliminar(id);
+        if(eliminado)
+        {
+            System.out.println("Cliente eliminado de la BDD");
+        }
     }
 
 

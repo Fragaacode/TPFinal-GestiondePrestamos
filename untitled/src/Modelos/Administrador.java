@@ -1,20 +1,20 @@
 package Modelos;
 import Enum.Rol;
 public class Administrador extends Empleado {
-    private double encargado=0.30;
+    private static final double encargado=0.30;
 
-    public Administrador(double encargado) {
-        this.encargado = encargado;
+    public Administrador() {
+
     }
 
-    public Administrador(int id, String nombre, String apellido, String dni, boolean activo, String usuario, String contraseña, double sueldoBase, double encargado) {
+    public Administrador(int id, String nombre, String apellido, String dni, boolean activo, String usuario, String contraseña, double sueldoBase) {
         super(id, nombre, apellido, dni, activo, usuario, contraseña, sueldoBase);
-        this.encargado = encargado;
+
     }
 
-    public Administrador(String nombre, String apellido, String dni, String usuario, String contraseña, double sueldoBase, double encargado) {
+    public Administrador(String nombre, String apellido, String dni, String usuario, String contraseña, double sueldoBase) {
         super(nombre, apellido, dni, usuario, contraseña, sueldoBase);
-        this.encargado = encargado;
+
     }
 
 

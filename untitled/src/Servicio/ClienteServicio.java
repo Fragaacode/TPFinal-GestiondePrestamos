@@ -92,6 +92,19 @@ public class ClienteServicio {
         }
     }
 
+    public boolean eliminar(int id)
+    {
+        Cliente sacar = buscarId(id);
+        boolean eliminado =dao.eliminar(sacar);
+
+        if(eliminado)
+        {
+            clientes.remove(sacar);
+            return true;
+        }
+        return false;
+    }
+
     public List<Cliente> listaactiva()
     {
         List <Cliente> activos = new ArrayList<>();

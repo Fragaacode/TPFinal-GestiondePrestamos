@@ -16,7 +16,7 @@ private int cantidadSolicitudes;
         this.cantidadSolicitudes = cantidadSolicitudes;
     }
 
-    public Asesor(String nombre, String apellido, String dni, String usuario, String contraseña, double sueldoBase, double comision, int cantidadSolicitudes) {
+    public Asesor(String nombre, String apellido, String dni, String usuario, String contraseña, double sueldoBase int cantidadSolicitudes) {
         super(nombre, apellido, dni, usuario, contraseña, sueldoBase);
         this.cantidadSolicitudes = 0;
     }

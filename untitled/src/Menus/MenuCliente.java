@@ -21,8 +21,8 @@ Scanner sc = new Scanner(System.in);
 
     public void menu()
     {
-        int opcion=1;
-        while(opcion!=0)
+        int opcion;
+        do
         {
             System.out.println("------GESTION DE CLIENTES-------");
             System.out.println("1- Ingresar Cliente");
@@ -87,7 +87,6 @@ Scanner sc = new Scanner(System.in);
                     }
                     case 0:
                     {
-                        opcion=0;
                         break;
                     }
                     default:
@@ -102,7 +101,7 @@ Scanner sc = new Scanner(System.in);
             {
                 System.err.println("Error con la Bdd "+ e.getMessage());
             }
-        }
+        }while (opcion!=0);
     }
 
     public void ingresar()throws SQLException

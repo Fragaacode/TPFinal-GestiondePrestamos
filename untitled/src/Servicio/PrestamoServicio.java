@@ -21,7 +21,7 @@ public class PrestamoServicio {
     private CuotaServicio cuotaServicio;
     private ArrayList<Prestamo> prestamos;
 
-    public PrestamoServicio(PrestamoDAO dao, ClienteServicio clienteServicio, EmpleadoServicio empleadoServicio, CuotaServicio cuotaServicio, ArrayList<Prestamo> prestamos)throws SQLException {
+    public PrestamoServicio(ClienteServicio clienteServicio, EmpleadoServicio empleadoServicio, CuotaServicio cuotaServicio)throws SQLException {
         this.dao = new PrestamoDAO();
         this.clienteServicio = clienteServicio;
         this.empleadoServicio = empleadoServicio;

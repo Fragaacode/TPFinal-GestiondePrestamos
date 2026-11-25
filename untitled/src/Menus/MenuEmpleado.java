@@ -17,7 +17,7 @@ public class MenuEmpleado {
         this.empleado = empleado;
     }
 
-    public void mostrar() {
+    public void menu() {
         int opcion;
         do {
             System.out.println("\n------------GESTIÓN DE EMPLEADOS ------------");

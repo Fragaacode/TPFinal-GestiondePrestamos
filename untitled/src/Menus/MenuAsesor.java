@@ -15,17 +15,17 @@ import Enum.EstadoPrestamo;
 
 public class MenuAsesor {
     private Asesor asesor;
-    private ClienteServicio clientes;
-    private PrestamoServicio prestamos;
-    private CuotaServicio cuotas;
+    private ClienteServicio clienteServicio;
+    private PrestamoServicio prestamoServicio;
+    private CuotaServicio cuotaServicio;
     private MenuCliente menuCliente;
 
-    public MenuAsesor(Asesor asesor, ClienteServicio clientes, PrestamoServicio prestamos, CuotaServicio cuotas, MenuCliente menuCliente) {
+    public MenuAsesor(Asesor asesor, ClienteServicio clienteServicio, PrestamoServicio prestamoServicio, CuotaServicio cuotaServicio) {
         this.asesor = asesor;
-        this.clientes = clientes;
-        this.prestamos = prestamos;
-        this.cuotas = cuotas;
-        this.menuCliente = new MenuCliente(clientes, prestamos);
+        this.clienteServicio = clienteServicio;
+        this.prestamoServicio = prestamoServicio;
+        this.cuotaServicio = cuotaServicio;
+        this.menuCliente = new MenuCliente(clienteServicio, prestamoServicio);
     }
 
     public void menu()
@@ -75,7 +75,7 @@ public class MenuAsesor {
                     }
                     case 6:
                     {
-                        Consola.mostrarLista(prestamos.listarPorEstado(EstadoPrestamo.PENDIENTE));
+                        Consola.mostrarLista(prestamoServicio.listarPorEstado(EstadoPrestamo.PENDIENTE));
                         break;
                     }
                     case 7:
@@ -121,29 +121,29 @@ public class MenuAsesor {
 
     public void solicitar() throws Exception
     {
-        Cliente cliente = clientes.buscarDni(Consola.leerTexto("Ingrese el DNI del cliente: "));
+        Cliente cliente = clienteServicio.buscarDni(Consola.leerTexto("Ingrese el DNI del cliente: "));
         System.out.println("Cliente: " + cliente.getNombre() + " " + cliente.getApellido());
         double monto = Consola.leerDouble("Monto solicitado: ");
         int cantCuotas = Consola.leerentero("Cantidad de cuotas " + new TreeSet<>(Prestamo.cuotasposibles()) + ": ");
 
         Prestamo prestamo = new Prestamo(cliente, asesor.getId(), monto, cantCuotas);
-        prestamos.validarSolicitud(prestamo);
+        prestamoServicio.validarSolicitud(prestamo);
         System.out.println("Total a devolver: $" + String.format("%.2f", prestamo.montototal()) + " en " + cantCuotas + " cuotas de $" + String.format("%.2f", prestamo.valorCuota()) + " (interes " + Prestamo.calcularinteres(cantCuotas) + "%)");
 
-            prestamos.guardarSolicitud(prestamo, asesor);
+            prestamoServicio.guardarSolicitud(prestamo, asesor);
             System.out.println("Solicitud #" + prestamo.getIdPrestamo() + " cargada. Queda PENDIENTE de aprobacion.");
     }
 
     public void modificar() throws Exception
     {
-        Prestamo actual = prestamos.buscarPendiente(Consola.leerentero("Ingrese el id del prestamo: "));
+        Prestamo actual = prestamoServicio.buscarPendiente(Consola.leerentero("Ingrese el id del prestamo: "));
         System.out.println(actual);
         double monto = Consola.leerDouble("Nuevo monto: ");
         int cantCuotas = Consola.leerentero("Nuevas cuotas: ");
 
         Prestamo cambios = new Prestamo(actual.getIdPrestamo(), actual.getCliente(), actual.getIdAsesor(), monto,
                 cantCuotas, actual.getFechaSolicitud(), actual.getEstado(), actual.isActivo());
-        boolean modificado = prestamos.modificarSolicitud(cambios);
+        boolean modificado = prestamoServicio.modificarSolicitud(cambios);
         if (modificado)
         {
             System.out.println("Solicitud modificada.");
@@ -153,8 +153,8 @@ public class MenuAsesor {
     public void cancelar() throws Exception
     {
         int id = Consola.leerentero("Ingrese el id del prestamo a cancelar: ");
-        System.out.println(prestamos.buscarPendiente(id));
-            boolean cancelado = prestamos.cancelar(id);
+        System.out.println(prestamoServicio.buscarPendiente(id));
+            boolean cancelado = prestamoServicio.cancelar(id);
             if (cancelado)
             {
                 System.out.println("Solicitud cancelada.");
@@ -163,7 +163,7 @@ public class MenuAsesor {
 
     public void cuotasImpagas() throws Exception
     {
-        List<Cuota> impagas = prestamos.cuotasImpagas(Consola.leerTexto("Ingrese el DNI del cliente: "));
+        List<Cuota> impagas = prestamoServicio.cuotasImpagas(Consola.leerTexto("Ingrese el DNI del cliente: "));
         Consola.mostrarLista(impagas);
         double deuda = 0;
         for (Cuota c : impagas)
@@ -176,7 +176,7 @@ public class MenuAsesor {
     public void pagarCuota() throws Exception
     {
         int id = Consola.leerentero("Ingrese el id de la cuota: ");
-        Cuota cuota = cuotas.buscarId(id);
+        Cuota cuota = cuotaServicio.buscarId(id);
         System.out.println(cuota);
         if (cuota.isPagada())
         {
@@ -184,7 +184,7 @@ public class MenuAsesor {
             return;
         }
 
-            boolean terminado = prestamos.registrarPagoCuota(id);
+            boolean terminado = prestamoServicio.registrarPagoCuota(id);
             System.out.println("Pago registrado.");
             if (terminado)
             {

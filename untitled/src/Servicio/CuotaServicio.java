@@ -12,7 +12,7 @@ public class CuotaServicio {
 private CuotaDAO dao;
     private ArrayList<Cuota> cuotas;
 
-    public CuotaServicio(CuotaDAO dao, ArrayList<Cuota> cuotas)throws SQLException {
+    public CuotaServicio()throws SQLException {
         this.dao = dao;
         this.cuotas = cuotas;
         cargarcuotas();

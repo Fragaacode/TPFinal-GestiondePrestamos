@@ -1,5 +1,8 @@
 package Menus;
 
+import Excepciones.DuplicadoException;
+import Excepciones.ElementoNoEncontradoException;
+import Excepciones.PrestamoInvalidoException;
 import Modelos.Asesor;
 import Modelos.Cliente;
 import Modelos.Cuota;
@@ -100,11 +103,19 @@ public class MenuAsesor {
             }
             catch (SQLException e)
             {
-                System.out.println("Error con la Bdd " + e.getMessage());
+                System.err.println("Error con la Bdd " + e.getMessage());
+            }
+            catch (ElementoNoEncontradoException e)
+            {
+                System.out.println("No se ah encontrado " + e.getMessage());
+            }
+            catch (PrestamoInvalidoException e)
+            {
+                System.out.println("Prestamo invalido: " + e.getMessage());
             }
             catch (Exception e)
             {
-                System.out.println("Error: " + e.getMessage());
+                System.err.println("ERROR = " + e.getMessage());
             }
         }
     }
@@ -119,7 +130,7 @@ public class MenuAsesor {
         }
     }
 
-    public void solicitar() throws Exception
+    public void solicitar() throws SQLException, ElementoNoEncontradoException, PrestamoInvalidoException
     {
         Cliente cliente = clienteServicio.buscarDni(Consola.leerTexto("Ingrese el DNI del cliente: "));
         System.out.println("Cliente: " + cliente.getNombre() + " " + cliente.getApellido());
@@ -134,7 +145,7 @@ public class MenuAsesor {
             System.out.println("Solicitud #" + prestamo.getIdPrestamo() + " cargada. Queda PENDIENTE de aprobacion.");
     }
 
-    public void modificar() throws Exception
+    public void modificar() throws SQLException, ElementoNoEncontradoException, PrestamoInvalidoException
     {
         Prestamo actual = prestamoServicio.buscarPendiente(Consola.leerentero("Ingrese el id del prestamo: "));
         System.out.println(actual);
@@ -150,7 +161,7 @@ public class MenuAsesor {
         }
     }
 
-    public void cancelar() throws Exception
+    public void cancelar() throws SQLException, ElementoNoEncontradoException, PrestamoInvalidoException
     {
         int id = Consola.leerentero("Ingrese el id del prestamo a cancelar: ");
         System.out.println(prestamoServicio.buscarPendiente(id));
@@ -161,7 +172,7 @@ public class MenuAsesor {
             }
     }
 
-    public void cuotasImpagas() throws Exception
+    public void cuotasImpagas() throws ElementoNoEncontradoException
     {
         List<Cuota> impagas = prestamoServicio.cuotasImpagas(Consola.leerTexto("Ingrese el DNI del cliente: "));
         Consola.mostrarLista(impagas);
@@ -173,7 +184,7 @@ public class MenuAsesor {
         System.out.println("Deuda total: $" + String.format("%.2f", deuda));
     }
 
-    public void pagarCuota() throws Exception
+    public void pagarCuota()throws SQLException, ElementoNoEncontradoException, PrestamoInvalidoException
     {
         int id = Consola.leerentero("Ingrese el id de la cuota: ");
         Cuota cuota = cuotaServicio.buscarId(id);

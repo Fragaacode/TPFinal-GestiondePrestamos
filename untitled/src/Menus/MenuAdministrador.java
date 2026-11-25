@@ -1,5 +1,7 @@
 package Menus;
 
+import Excepciones.ElementoNoEncontradoException;
+import Excepciones.PrestamoInvalidoException;
 import Modelos.Administrador;
 import Modelos.Cuota;
 import Modelos.Empleado;
@@ -116,16 +118,24 @@ public class MenuAdministrador {
             }
             catch (SQLException e)
             {
-                System.out.println("Error con la Bdd " + e.getMessage());
+                System.err.println("Error con la Bdd " + e.getMessage());
+            }
+            catch (ElementoNoEncontradoException e)
+            {
+                System.err.println("No se ah encontrado " + e.getMessage());
+            }
+            catch (PrestamoInvalidoException e)
+            {
+                System.err.println("Prestamo invalido: " + e.getMessage());
             }
             catch (Exception e)
             {
-                System.out.println("Error: " + e.getMessage());
+                System.err.println("ERROR = " + e.getMessage());
             }
         }
     }
 
-    public void aprobar() throws Exception
+    public void aprobar()  throws SQLException, ElementoNoEncontradoException, PrestamoInvalidoException
     {
         int id = Consola.leerentero("Ingrese el id de la solicitud a aprobar: ");
         Prestamo prestamo = prestamoServicio.buscarPendiente(id);
@@ -141,7 +151,7 @@ public class MenuAdministrador {
 
     }
 
-    public void rechazar() throws Exception
+    public void rechazar() throws SQLException, ElementoNoEncontradoException, PrestamoInvalidoException
     {
         int id = Consola.leerentero("Ingrese el id de la solicitud a rechazar: ");
         System.out.println(prestamoServicio.buscarPendiente(id));
@@ -152,7 +162,7 @@ public class MenuAdministrador {
         }
 
     }
-    public void anularCuota() throws Exception
+    public void anularCuota() throws SQLException, ElementoNoEncontradoException
     {
         int id = Consola.leerentero("Ingrese el id de la cuota: ");
         System.out.println(cuotaServicio.buscarId(id));

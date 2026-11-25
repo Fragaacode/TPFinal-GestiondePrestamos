@@ -1,5 +1,7 @@
 package Servicio;
 
+import Excepciones.ElementoNoEncontradoException;
+import Excepciones.PrestamoInvalidoException;
 import Modelos.Cuota;
 import Persistencia.CuotaDAO;
 
@@ -32,11 +34,11 @@ private CuotaDAO dao;
         }
     }
 
-    public Cuota registrarPago(int idCuota)throws SQLException
+    public Cuota registrarPago(int idCuota)throws SQLException, ElementoNoEncontradoException, PrestamoInvalidoException
     {
         Cuota cuota = buscarId(idCuota);
         if (cuota.isPagada()) {
-            ///Excepcioj*-------------------------------------------------------------------------------------------
+            throw new PrestamoInvalidoException("La cuota #" + idCuota + " ya fue pagada el " + cuota.getFechaPago());
         }
         LocalDate hoy = LocalDate.now();
         Cuota pagada = new Cuota(cuota.getIdCuota(), cuota.getIdPrestamo(), cuota.getNumero(), cuota.getMonto(),
@@ -48,7 +50,7 @@ private CuotaDAO dao;
         return cuota;
     }
 
-    public boolean baja(int idCuota) throws SQLException {
+    public boolean baja(int idCuota) throws SQLException,ElementoNoEncontradoException {
         Cuota anular = buscarId(idCuota);
         boolean anulada = dao.DardeBaja(anular);
         if (anulada) {
@@ -77,13 +79,13 @@ private CuotaDAO dao;
         return activas;
     }
 
-    public Cuota buscarId(int id) {
+    public Cuota buscarId(int id)throws ElementoNoEncontradoException {
         for (Cuota c : cuotas) {
             if (c.getIdCuota() == id && c.isActivo()) {
                 return c;
             }
         }
-      ///Excepcioj*-------------------------------------------------------------------------------------------
+        throw new ElementoNoEncontradoException("No existe una cuota activa con id " + id);
     }
 
 }

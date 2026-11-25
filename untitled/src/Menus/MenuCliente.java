@@ -1,5 +1,7 @@
 package Menus;
 
+import Excepciones.DuplicadoException;
+import Excepciones.ElementoNoEncontradoException;
 import Modelos.Cliente;
 import Servicio.ClienteServicio;
 import Servicio.PrestamoServicio;
@@ -7,7 +9,7 @@ import Servicio.PrestamoServicio;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
+
 
 public class MenuCliente {
 private ClienteServicio servicio;
@@ -98,12 +100,28 @@ private PrestamoServicio prestamos;
             }
             catch (SQLException e)
             {
-                System.err.println("Error con la Bdd "+ e.getMessage());
+                System.err.println("Error con la Bdd " + e.getMessage());
+            }
+            catch (DuplicadoException e)
+            {
+                System.out.println("Este dato esta duplicado: " + e.getMessage());
+            }
+            catch (ElementoNoEncontradoException e)
+            {
+                System.out.println("No se ah encontrado: " + e.getMessage());
+            }
+            catch (IllegalArgumentException | IllegalStateException e)
+            {
+                System.out.println("Operacion invalida: " + e.getMessage());
+            }
+            catch (Exception e)
+            {
+                System.err.println("ERROR = " + e.getMessage());
             }
         }while (opcion!=0);
     }
 
-    public void ingresar()throws SQLException
+    public void ingresar()throws SQLException, DuplicadoException
     {
         String nombre = Consola.leerTexto("Nombre: ");
         String apellido = Consola.leerTexto("Apellido: ");
@@ -116,7 +134,7 @@ private PrestamoServicio prestamos;
         System.out.println("Cliente creado con id " + nuevo.getId());
     }
 
-    public void modificar()throws SQLException
+    public void modificar()throws SQLException,ElementoNoEncontradoException
     {
         Cliente modificado=servicio.buscarDni(Consola.leerTexto("Ingrese el DNI del cliente que desea modificar"));
         System.out.println("Ponga Enter si no quiere cambiar el campo:");
@@ -134,7 +152,7 @@ private PrestamoServicio prestamos;
         }
     }
 
-    public void DardeBaja()throws SQLException
+    public void DardeBaja()throws SQLException,ElementoNoEncontradoException
     {
 
         listarActivos();
@@ -147,7 +165,7 @@ private PrestamoServicio prestamos;
        }
     }
 
-    public void reactivar()throws SQLException
+    public void reactivar()throws SQLException,ElementoNoEncontradoException
     {
         listarInactivos();
         Cliente activar = servicio.buscarDni(Consola.leerTexto("Ingrese el DNI del cliente que desee reactivar"));
@@ -177,12 +195,13 @@ private PrestamoServicio prestamos;
         Consola.mostrarLista(inactivos);
     }
 
-    public void historial()
+    public void historial()throws ElementoNoEncontradoException
     {
-        ///HACER METODO EN PRESTAMOSERVICIO
+        Cliente cliente = servicio.buscarDni(Consola.leerTexto("Ingrese el DNI del cliente: "));
+        Consola.mostrarLista(prestamos.historial(cliente.getId()));
     }
 
-    public void eliminar()throws SQLException
+    public void eliminar()throws SQLException,ElementoNoEncontradoException
     {
         listar();
         int id= Consola.leerentero("Ingrese el id del cliente que desea eliminar definitivamente");

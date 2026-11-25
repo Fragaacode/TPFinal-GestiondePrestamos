@@ -1,6 +1,8 @@
 package Servicio;
 
 
+import Excepciones.ElementoNoEncontradoException;
+import Excepciones.PrestamoInvalidoException;
 import Modelos.Asesor;
 import Modelos.Cliente;
 import Modelos.Cuota;
@@ -21,7 +23,7 @@ public class PrestamoServicio {
     private CuotaServicio cuotaServicio;
     private ArrayList<Prestamo> prestamos;
 
-    public PrestamoServicio(ClienteServicio clienteServicio, EmpleadoServicio empleadoServicio, CuotaServicio cuotaServicio)throws SQLException {
+    public PrestamoServicio(ClienteServicio clienteServicio, EmpleadoServicio empleadoServicio, CuotaServicio cuotaServicio)throws SQLException,ElementoNoEncontradoException {
         this.dao = new PrestamoDAO();
         this.clienteServicio = clienteServicio;
         this.empleadoServicio = empleadoServicio;
@@ -30,37 +32,38 @@ public class PrestamoServicio {
         cargarprestamos();
     }
 
-    public void cargarprestamos() throws SQLException {
+    public void cargarprestamos() throws SQLException,ElementoNoEncontradoException {
         List<Prestamo> lista = dao.listar();
         for (Prestamo p : lista) {
-            p.setCliente(clienteServicio.buscarId(p.getCliente().getId()));
-        }
+
+                p.setCliente(clienteServicio.buscarId(p.getCliente().getId()));
+
+            }
+
         prestamos.clear();
         prestamos.addAll(lista);
     }
 
-    public void validarSolicitud(Prestamo p) {
+    public void validarSolicitud(Prestamo p)throws PrestamoInvalidoException {
         if (!p.getCliente().isActivo()) {
-            ///Excepcion/-----------------------------------------------------------------------------------
+            throw new PrestamoInvalidoException("El cliente está dado de baja.");
         }
         if (p.getMontoSolicitado() < Prestamo.MONTO_MINIMO || p.getMontoSolicitado() > Prestamo.MONTO_MAXIMO) {
-            ///Excepcion/-----------------------------------------------------------------------------------
-
+            throw new PrestamoInvalidoException(String.format("El monto debe estar entre $%.0f y $%.0f.",Prestamo.MONTO_MINIMO, Prestamo.MONTO_MAXIMO));
         }
         if (!Prestamo.cuotasposibles().contains(p.getCantidadCuotas())) {
-            ///Excepcion/-----------------------------------------------------------------------------------
+            throw new PrestamoInvalidoException("Cantidad de cuotas no permitida. Opciones: " +new TreeSet<>(Prestamo.cuotasposibles()));
 
         }
 
         int enCurso = 0;
         for (Prestamo otro : prestamos) {
-            if (otro.getCliente().getId() == p.getCliente().getId() && otro.isActivo()
-                    && (otro.getEstado() == EstadoPrestamo.PENDIENTE || otro.getEstado() == EstadoPrestamo.APROBADO)) {
+            if (otro.getCliente().getId() == p.getCliente().getId() && otro.isActivo() && (otro.getEstado() == EstadoPrestamo.PENDIENTE || otro.getEstado() == EstadoPrestamo.APROBADO)) {
                 enCurso++;
             }
         }
         if (enCurso >= maxprestamos) {
-            ///Excepcion/-----------------------------------------------------------------------------------
+            throw new PrestamoInvalidoException("El cliente ya tiene " + enCurso + " prestamos en curso (El maximo es: " + maxprestamos + ")");
         }
 
 
@@ -68,20 +71,19 @@ public class PrestamoServicio {
 
     public void guardarSolicitud(Prestamo p, Asesor asesor) throws SQLException {
         if (dao.insertar(p) > 0) {
-            prestamos.add(0, p); // al principio: la lista va del más nuevo al más viejo
+            prestamos.add(0, p);
             empleadoServicio.registrarSolicitud(asesor);
         }
     }
 
 
-    public boolean modificarSolicitud(Prestamo cambios)
-            throws SQLException{
+    public boolean modificarSolicitud(Prestamo cambios) throws SQLException,PrestamoInvalidoException,ElementoNoEncontradoException{
         Prestamo existente = buscarPendiente(cambios.getIdPrestamo());
         if (cambios.getMontoSolicitado() < Prestamo.MONTO_MINIMO || cambios.getMontoSolicitado() > Prestamo.MONTO_MAXIMO) {
-            ///Excepcion/-----------------------------------------------------------------------------------
+            throw new PrestamoInvalidoException(String.format("El monto debe estar entre $%.0f y $%.0f.",Prestamo.MONTO_MINIMO, Prestamo.MONTO_MAXIMO));
         }
         if (!Prestamo.cuotasposibles().contains(cambios.getCantidadCuotas())) {
-            ///Excepcion/-----------------------------------------------------------------------------------
+            throw new PrestamoInvalidoException("Cantidad de cuotas no permitida. Opciones: "+ new TreeSet<>(Prestamo.cuotasposibles()));
         }
 
         boolean modificado = dao.modificar(cambios);
@@ -92,21 +94,20 @@ public class PrestamoServicio {
         return modificado;
     }
 
-    public List<Cuota> aprobar(int idPrestamo)
-            throws SQLException{
+    public List<Cuota> aprobar(int idPrestamo) throws SQLException, PrestamoInvalidoException, ElementoNoEncontradoException {
         Prestamo p = buscarPendiente(idPrestamo);
         Prestamo cambios = new Prestamo(p.getIdPrestamo(), p.getCliente(), p.getIdAsesor(), p.getMontoSolicitado(),
                 p.getCantidadCuotas(), p.getFechaSolicitud(), EstadoPrestamo.APROBADO, p.isActivo());
-        if (dao.modificar(cambios)) {      // 1) base
-            p.setEstado(EstadoPrestamo.APROBADO);   // 2) memoria
+        if (!dao.modificar(cambios)) {
+            throw new SQLException("No se pudo aprobar el prestamo " + idPrestamo + " en la base de datos.");
         }
-
+        p.setEstado(EstadoPrestamo.APROBADO);
         List<Cuota> nuevas = p.generarCuotas(LocalDate.now());
         cuotaServicio.ingresarCuotas(nuevas);
         return nuevas;
     }
 
-    public boolean rechazar(int idPrestamo) throws SQLException{
+    public boolean rechazar(int idPrestamo) throws SQLException,PrestamoInvalidoException,ElementoNoEncontradoException{
         Prestamo p = buscarPendiente(idPrestamo);
         Prestamo cambios = new Prestamo(p.getIdPrestamo(), p.getCliente(), p.getIdAsesor(), p.getMontoSolicitado(),
                 p.getCantidadCuotas(), p.getFechaSolicitud(), EstadoPrestamo.RECHAZADO, p.isActivo());
@@ -117,7 +118,7 @@ public class PrestamoServicio {
         return rechazado;
     }
 
-    public boolean cancelar(int idPrestamo) throws SQLException{
+    public boolean cancelar(int idPrestamo) throws SQLException,PrestamoInvalidoException,ElementoNoEncontradoException{
         Prestamo p = buscarPendiente(idPrestamo);
         Prestamo cambios = new Prestamo(p.getIdPrestamo(), p.getCliente(), p.getIdAsesor(), p.getMontoSolicitado(),
                 p.getCantidadCuotas(), p.getFechaSolicitud(), EstadoPrestamo.CANCELADO, p.isActivo());
@@ -129,16 +130,13 @@ public class PrestamoServicio {
         return cancelado;
     }
 
-    public boolean registrarPagoCuota(int idCuota)
-            throws SQLException{
+    public boolean registrarPagoCuota(int idCuota)throws SQLException,PrestamoInvalidoException,ElementoNoEncontradoException {
         Cuota cuota = cuotaServicio.registrarPago(idCuota);
-
         for (Cuota c : cuotaServicio.listarPorPrestamo(cuota.getIdPrestamo())) {
             if (!c.isPagada()) {
-                return false; // todavía quedan cuotas por pagar
+                return false;
             }
         }
-
         Prestamo p = buscarId(cuota.getIdPrestamo());
         Prestamo cambios = new Prestamo(p.getIdPrestamo(), p.getCliente(), p.getIdAsesor(), p.getMontoSolicitado(),
                 p.getCantidadCuotas(), p.getFechaSolicitud(), EstadoPrestamo.PAGADO, p.isActivo());
@@ -148,19 +146,19 @@ public class PrestamoServicio {
         return true;
     }
 
-    public Prestamo buscarId(int id) {
+    public Prestamo buscarId(int id)throws ElementoNoEncontradoException {
         for (Prestamo p : prestamos) {
             if (p.getIdPrestamo() == id && p.isActivo()) {
                 return p;
             }
         }
-        ///Excepcion/-----------------------------------------------------------------------------------
+        throw new ElementoNoEncontradoException("No existe un préstamo activo con id " + id);
     }
 
-    public Prestamo buscarPendiente(int id){
+    public Prestamo buscarPendiente(int id) throws PrestamoInvalidoException, ElementoNoEncontradoException{
         Prestamo prestamo = buscarId(id);
         if (prestamo.getEstado() != EstadoPrestamo.PENDIENTE) {
-            ///Excepcion/-----------------------------------------------------------------------------------
+            throw new PrestamoInvalidoException("El préstamo Nº" + id + " esta " + prestamo.getEstado() + ", solo se puede operar si esta en PENDIENTE.");
         }
         return prestamo;
     }
@@ -195,7 +193,7 @@ public class PrestamoServicio {
         return resultado;
     }
 
-    public List<Cuota> cuotasImpagas(String dni) {
+    public List<Cuota> cuotasImpagas(String dni)throws ElementoNoEncontradoException {
         Cliente cliente = clienteServicio.buscarDni(dni);
         List<Cuota> impagas = new ArrayList<>();
         for (Prestamo p : historial(cliente.getId())) {

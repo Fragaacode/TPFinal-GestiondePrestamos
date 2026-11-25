@@ -1,5 +1,7 @@
 package Menus;
 
+import Excepciones.DuplicadoException;
+import Excepciones.ElementoNoEncontradoException;
 import Modelos.Administrador;
 import Modelos.Asesor;
 import Modelos.Empleado;
@@ -24,12 +26,12 @@ public class MenuEmpleado {
             System.out.println("1. Alta de empleado");
             System.out.println("2. Modificar empleado");
             System.out.println("3. Baja de empleado");
-            System.out.println("4. Consultar empleado por id");
+            System.out.println("4. Reactivar empleado");
             System.out.println("5. Listar empleados");
-            System.out.println("6. Listar empleados Inactivos");
-            System.out.println("7. Reactivar empleado");
+            System.out.println("6. Listar empleados activos");
+            System.out.println("7. Listar empleados inactivos");
             System.out.println("8. Eliminar empleado definitivamente");
-            System.out.println("9- Buscar empleado por el id");
+            System.out.println("9. Buscar empleado por id");
             System.out.println("0. Volver");
             opcion = Consola.leerentero("Opción: ");
 
@@ -67,15 +69,24 @@ public class MenuEmpleado {
                     default:
                         System.out.println("Opción inválida.");
                 }
-            } catch (SQLException e) {
-                System.out.println("Error de base de datos: " + e.getMessage());
-            } catch (Exception e) {
-                System.out.println("Error: " + e.getMessage());
+            }
+            catch (SQLException e) {
+            System.out.println("Error en la BDD" + e.getMessage());
+        } catch (DuplicadoException e) {
+            System.out.println("Este dato esta duplicado " + e.getMessage());
+        } catch (ElementoNoEncontradoException e) {
+            System.out.println("No se ha encontrado " + e.getMessage());
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            System.out.println("Operacion invalida " + e.getMessage());
+        }
+            catch (Exception e)
+            {
+                System.err.println("ERROR = " + e.getMessage());
             }
         } while (opcion != 0);
     }
 
-    public void ingresar() throws Exception
+    public void ingresar() throws SQLException, DuplicadoException
     {
         int rol = Consola.leerentero("Ingrese el Rol (1-Rol Administrador  2-Rol Asesor): ");
         if (rol != 1 && rol != 2)
@@ -103,7 +114,7 @@ public class MenuEmpleado {
         System.out.println("Empleado creado con id " + nuevo.getId());
     }
 
-    public void modificar() throws Exception
+    public void modificar() throws SQLException, ElementoNoEncontradoException
     {
         Empleado actual = servicio.buscarPorId(Consola.leerentero("Ingrese el id del empleado que desea modificar: "));
         System.out.println(actual);
@@ -135,7 +146,7 @@ public class MenuEmpleado {
         }
     }
 
-    public void DardeBaja() throws Exception
+    public void DardeBaja() throws SQLException, ElementoNoEncontradoException
     {
         listarActivos();
         int id = Consola.leerentero("Ingrese el id del empleado que desee dar de baja: ");
@@ -146,7 +157,7 @@ public class MenuEmpleado {
             }
 
     }
-    public void reactivar() throws Exception
+    public void reactivar() throws SQLException, ElementoNoEncontradoException
     {
         listarInactivos();
         boolean reactivo = servicio.reactivar(Consola.leerentero("Ingrese el id del empleado que desee reactivar: "));
@@ -174,7 +185,7 @@ public class MenuEmpleado {
         Consola.mostrarLista(inactivos);
     }
 
-    public void eliminar() throws Exception
+    public void eliminar() throws SQLException, ElementoNoEncontradoException
     {
         listar();
         int id = Consola.leerentero("Ingrese el id del empleado que desea eliminar definitivamente: ");

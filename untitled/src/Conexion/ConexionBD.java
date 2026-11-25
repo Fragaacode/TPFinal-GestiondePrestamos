@@ -7,7 +7,7 @@ import java.sql.SQLException;
 public class ConexionBD {
     private static final String url="";
     private static final String user="";
-    private static final String password="";
+    private static final String password="159753";
 
     public static Connection conectar()throws SQLException
     {

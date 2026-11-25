@@ -75,8 +75,7 @@ private boolean activo=true;
                 ", nombre='" + nombre + '\'' +
                 ", apellido='" + apellido + '\'' +
                 ", dni='" + dni + '\'' +
-                ", activo=" + activo +
-                '}';
+                ", activo=" + activo;
     }
 
     @Override

@@ -1,5 +1,8 @@
 package Servicio;
 
+import Excepciones.DatosInvalidosException;
+import Excepciones.DuplicadoException;
+import Excepciones.ElementoNoEncontradoException;
 import Modelos.Asesor;
 import Modelos.Empleado;
 import Persistencia.EmpleadoDAO;
@@ -32,16 +35,16 @@ private HashMap<String, Empleado> UsuarioEmpleado;
         }
     }
 
-    public Empleado login(String usuario,String contraseña)
+    public Empleado login(String usuario,String contraseña)throws DatosInvalidosException
     {
         Empleado empleado= UsuarioEmpleado.get(usuario.trim().toLowerCase());
         if (empleado == null || !empleado.isActivo() || !empleado.validarContrasena(contraseña)) {
-///AGREGAR EXCEPCION PEROSNALIXADA----------------------------------------------------------------------
+            throw new DatosInvalidosException("Usuario o contraseña incorrectos.");
         }
         return empleado;
     }
 
-    public Empleado alta(Empleado empleado) throws SQLException {
+    public Empleado alta(Empleado empleado) throws SQLException, DuplicadoException {
         Validaciones.Vacio(empleado.getNombre(), "nombre");
         Validaciones.Vacio(empleado.getApellido(), "apellido");
         Validaciones.Vacio(empleado.getUsuario(), "usuario");
@@ -50,13 +53,12 @@ private HashMap<String, Empleado> UsuarioEmpleado;
 
         for (Empleado e : empleados) {
             if (e.getDni().equals(empleado.getDni())) {
-                ///AGREGAR EXCEPCION PEROSNALIXADA----------------------------------------------------------------------
+                throw new DuplicadoException("Ya existe un empleado con DNI " + e.getDni());
             }
         }
         if (UsuarioEmpleado.containsKey(empleado.getUsuario().toLowerCase())) {
-            ///AGREGAR EXCEPCION PEROSNALIXADA------------------------------------------------------------
+            throw new DuplicadoException("El usuario '" + empleado.getUsuario() + "' ya está en uso.");
         }
-
         if (dao.insertar(empleado) > 0) {
             empleados.add(empleado);
             UsuarioEmpleado.put(empleado.getUsuario().toLowerCase(), empleado);
@@ -64,7 +66,7 @@ private HashMap<String, Empleado> UsuarioEmpleado;
         return empleado;
     }
 
-    public boolean modificar(Empleado empleado)throws SQLException
+    public boolean modificar(Empleado empleado)throws SQLException,ElementoNoEncontradoException
     {
         Empleado viejo = buscarPorId(empleado.getId());
         Validaciones.Vacio(empleado.getNombre(), "Nombre");
@@ -83,23 +85,23 @@ private HashMap<String, Empleado> UsuarioEmpleado;
 
     }
 
-    public Empleado buscarPorId(int id)  {
+    public Empleado buscarPorId(int id)throws ElementoNoEncontradoException  {
         for (Empleado e : empleados) {
             if (e.getId() == id) {
                 return e;
             }
         }
-        ///AGREGAR EXCEPCION PEROSNALIXADA------------------------------------------------------------
+        throw new ElementoNoEncontradoException("No existe un empleado con id " + id);
 
     }
 
-    public boolean baja(int id, int idLogueado) throws SQLException {
+    public boolean baja(int id, int idLogueado) throws SQLException,ElementoNoEncontradoException {
         if (id == idLogueado) {
             throw new IllegalArgumentException("No podés darte de baja a vos mismo.");
         }
         Empleado bajar = buscarPorId(id);
         if (!bajar.isActivo()) {
-            ///AGREGAR EXCEPCION PEROSNALIXADA------------------------------------------------------------
+            throw new IllegalStateException("El empleado ya está dado de baja.");
         }
         boolean bajo = dao.DardeBaja(bajar);
         if (bajo) {
@@ -107,10 +109,10 @@ private HashMap<String, Empleado> UsuarioEmpleado;
         }
         return bajo;
     }
-    public boolean reactivar(int id) throws SQLException{
+    public boolean reactivar(int id) throws SQLException,ElementoNoEncontradoException{
         Empleado activar = buscarPorId(id);
         if (activar.isActivo()) {
-            ///AGREGAR EXCEPCION PEROSNALIXADA------------------------------------------------------------
+            throw new IllegalStateException("El empleado no está dado de baja.");
         }
         boolean reactivado = dao.reactivar(activar);
         if (reactivado) {
@@ -119,9 +121,9 @@ private HashMap<String, Empleado> UsuarioEmpleado;
         return reactivado;
     }
 
-    public boolean eliminar(int id, int idLogueado) throws SQLException {
+    public boolean eliminar(int id, int idLogueado) throws SQLException,ElementoNoEncontradoException {
         if (id == idLogueado) {
-            ///AGREGAR EXCEPCION PEROSNALIXADA------------------------------------------------------------
+            throw new IllegalArgumentException("No podés eliminarte a vos mismo.");
         }
         Empleado sacar = buscarPorId(id);
         try {
@@ -132,7 +134,7 @@ private HashMap<String, Empleado> UsuarioEmpleado;
             }
             return eliminado;
         } catch (SQLIntegrityConstraintViolationException e) {
-            ///AGREGAR EXCEPCION PEROSNALIXADA------------------------------------------------------------ el asesor tiene préstamos cargados. Usá la baja lógica.
+            throw new IllegalStateException("No se puede eliminar: el asesor tiene préstamos cargados. Usar la baja lógica.");
         }
     }
 

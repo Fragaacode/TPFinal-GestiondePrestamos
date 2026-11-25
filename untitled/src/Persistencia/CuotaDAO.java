@@ -12,7 +12,7 @@ public class CuotaDAO implements DAO<Cuota> {
 
     public int insertar(Cuota cuota)throws SQLException
     {
-        String sql="INSERT INTO cuota (id_prestamo,numero,monto,fechaVenciomento,pagada,fechaPago,activo) VALUES(?,?,?,?,?,?,TRUE)";
+        String sql="INSERT INTO cuota (id_prestamo,numero,monto,fechaVencimiento,pagada,fechaPago,activo) VALUES(?,?,?,?,?,?,TRUE)";
         String sqlid="SELECT LAST_INSERT_ID()";
 
         try(Connection c = ConexionBD.conectar();
@@ -40,7 +40,7 @@ public class CuotaDAO implements DAO<Cuota> {
 
     public boolean modificar(Cuota cuota)throws SQLException
     {
-        String sql = "UPDATE cuota SET monto = ?, fechaVenciomento = ?, pagada = ?, fechaPago = ? WHERE id_cuota = ?";
+        String sql = "UPDATE cuota SET monto = ?, fechaVencimiento = ?, pagada = ?, fechaPago = ? WHERE id_cuota = ?";
         try (Connection con = ConexionBD.conectar();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setDouble(1, cuota.getMonto());
@@ -102,7 +102,7 @@ public class CuotaDAO implements DAO<Cuota> {
                         rs.getInt("id_prestamo"),
                         rs.getInt("numero"),
                         rs.getDouble("monto"),
-                        rs.getDate("fechaVenciomento").toLocalDate(),
+                        rs.getDate("fechaVencimiento").toLocalDate(),
                         rs.getBoolean("pagada"),
                         fechaPago != null ? fechaPago.toLocalDate() : null,
                         rs.getBoolean("activo"));

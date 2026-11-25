@@ -1,4 +1,5 @@
 import Excepciones.DatosInvalidosException;
+import Excepciones.ElementoNoEncontradoException;
 import Menus.Consola;
 import Menus.MenuAdministrador;
 import Menus.MenuAsesor;
@@ -30,6 +31,11 @@ public class Main {
             prestamoServicio = new PrestamoServicio(clienteServicio, empleadoServicio, cuotaServicio);
         } catch (SQLException e) {
             System.err.println("ERROR al cargar los datos de la BDD" + e.getMessage());
+            return;
+        }
+        catch (ElementoNoEncontradoException e)
+        {
+            System.err.println("ERROR al cargar los datos de la BDD " + e.getMessage());
             return;
         }
 

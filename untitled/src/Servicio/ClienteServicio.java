@@ -1,9 +1,13 @@
 package Servicio;
 
+import Excepciones.DatosInvalidosException;
+import Excepciones.DuplicadoException;
+import Excepciones.ElementoNoEncontradoException;
 import Modelos.Cliente;
 import Persistencia.ClienteDAO;
 
 import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -31,7 +35,7 @@ public class ClienteServicio {
         }
     }
 
-    public Cliente ingresar(Cliente c)throws SQLException
+    public Cliente ingresar(Cliente c)throws SQLException,DuplicadoException
     {
         Validaciones.Vacio(c.getNombre(),"Nombre");
         Validaciones.Vacio(c.getApellido(),"Apellido");
@@ -42,7 +46,7 @@ public class ClienteServicio {
 
         if(dnis.contains(c.getDni()))
         {
-            ///Exceptcion personalizada agregar-------------------------------------------------------------------
+            throw new DuplicadoException("Ya existe un cliente con el DNI " + c.getDni());
         }
         int idnuevo= dao.insertar(c);
         if(idnuevo> 0)
@@ -53,44 +57,43 @@ public class ClienteServicio {
         return c;
     }
 
-    public boolean modificar(Cliente c)throws SQLException
-    {///Exceptcion personalizada agregar-----------------------------------------------------------------
-        Validaciones.Vacio(c.getNombre(),"Nombre");
-        Validaciones.Vacio(c.getApellido(),"Apellido");
-        Validaciones.Vacio(c.getTelefono(),"Telefono");
+    public boolean modificar(Cliente c)throws SQLException, ElementoNoEncontradoException
+    {Cliente existente = buscarId(c.getId());
+        Validaciones.Vacio(c.getNombre(), "Nombre");
+        Validaciones.Vacio(c.getApellido(), "Apellido");
         Validaciones.email(c.getEmail());
-        Validaciones.Vacio(c.getDireccion(),"Direccion");
+        Validaciones.Vacio(c.getDireccion(), "Direccion");
 
-        boolean modificado=dao.modificar(c);
-
-        if(modificado)
-        {
-            for(int i=0;i<clientes.size();i++)
-            {
-                if(clientes.get(i).getId()==c.getId())
-                {
-                    clientes.set(i,c);
-                }
-            }
-            return true;
+        boolean modificado = dao.modificar(c);
+        if (modificado) {
+            existente.setNombre(c.getNombre());
+            existente.setApellido(c.getApellido());
+            existente.setTelefono(c.getTelefono());
+            existente.setEmail(c.getEmail());
+            existente.setDireccion(c.getDireccion());
         }
-        return false;
-
+        return modificado;
     }
 
-    public boolean baja(int id)throws SQLException
-    {///Exceptcion personalizada agregar-----------------------------------------------------------------
+    public boolean baja(int id)throws SQLException, ElementoNoEncontradoException
+    {
         Cliente bajar = buscarId(id);
-        if (dao.DardeBaja(bajar)) {
-            bajar.setActivo(false);
-            return true;
+        if (!bajar.isActivo()) {
+            throw new IllegalStateException("El cliente ya está dado de baja.");
         }
-        return false;
+        boolean bajo = dao.DardeBaja(bajar);
+        if (bajo) {
+            bajar.setActivo(false);
+        }
+        return bajo;
     }
 
-    public boolean reactivar(int id)throws SQLException
-    {///Exceptcion personalizada agregar-----------------------------------------------------------------
+    public boolean reactivar(int id)throws SQLException,ElementoNoEncontradoException
+    {
         Cliente activar = buscarId(id);
+        if (activar.isActivo()) {
+            throw new IllegalStateException("El cliente no está dado de baja.");
+        }
         if (dao.reactivar(activar)) {
             activar.setActivo(true);
             return true;
@@ -98,17 +101,19 @@ public class ClienteServicio {
         return false;
     }
 
-    public boolean eliminar(int id)throws SQLException
+    public boolean eliminar(int id)throws SQLException,ElementoNoEncontradoException
     {
         Cliente sacar = buscarId(id);
-        boolean eliminado =dao.eliminar(sacar);
-
-        if(eliminado)
-        {
-            clientes.remove(sacar);
-            return true;
+        try {
+            boolean eliminado = dao.eliminar(sacar);
+            if (eliminado) {
+                clientes.remove(sacar);
+                dnis.remove(sacar.getDni());
+            }
+            return eliminado;
+        } catch (SQLIntegrityConstraintViolationException e) {
+            throw new IllegalStateException("No se puede eliminar: el cliente tiene préstamos. Usar baja lógica.");
         }
-        return false;
     }
 
     public List<Cliente> listaactiva()
@@ -148,8 +153,8 @@ public class ClienteServicio {
     }
 
 
-    public Cliente buscarId(int id)
-    {///Exceptcion personalizada agregar-----------------------------------------------------------------
+    public Cliente buscarId(int id)throws ElementoNoEncontradoException
+    {
         for(Cliente c : clientes)
         {
             if(c.getId()==id)
@@ -157,16 +162,16 @@ public class ClienteServicio {
                 return c;
             }
         }
-        return null;
+        throw new ElementoNoEncontradoException("No existe un cliente con id " + id);
     }
 
-    public Cliente buscarDni(String dni)
-    {///Exceptcion personalizada agregar-----------------------------------------------------------------
+    public Cliente buscarDni(String dni)throws ElementoNoEncontradoException
+    {///Exceptcion personalizadda agregar-----------------------------------------------------------------
         for (Cliente c : clientes) {
-            if (c.getDni().equals(dni) && c.isActivo()) {
+            if (c.getDni().equals(dni)) {
                 return c;
             }
         }
-        return null;
+        throw new ElementoNoEncontradoException("No existe un cliente con DNI " + dni);
     }
 }

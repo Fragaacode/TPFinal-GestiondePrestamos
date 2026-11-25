@@ -1,3 +1,4 @@
+import Excepciones.DatosInvalidosException;
 import Menus.Consola;
 import Menus.MenuAdministrador;
 import Menus.MenuAsesor;
@@ -62,8 +63,8 @@ public class Main {
                 Empleado empleado = empleadoServicio.login(usuario, contraseña);
                 System.out.println("Bienvenido al Sistema de Gestion de prestamos" + empleado.getNombre());
                 return empleado;
-            } catch () {
-
+            } catch (DatosInvalidosException e) {
+                System.err.println(e.getMessage());
             }
         }
     }

@@ -17,7 +17,6 @@ private PrestamoServicio prestamos;
         this.servicio = servicio;
         this.prestamos = prestamos;
     }
-Scanner sc = new Scanner(System.in);
 
     public void menu()
     {
@@ -35,7 +34,7 @@ Scanner sc = new Scanner(System.in);
             System.out.println("8-Historial Crediticio de un Cliente");
             System.out.println("9-Eliminar Cliente");
             System.out.println("0-Volver");
-            opcion=sc.nextInt();
+            opcion = Consola.leerentero("Opcion: ");
 
             try {
                 switch (opcion)
@@ -121,12 +120,14 @@ Scanner sc = new Scanner(System.in);
     {
         Cliente modificado=servicio.buscarDni(Consola.leerTexto("Ingrese el DNI del cliente que desea modificar"));
         System.out.println("Ponga Enter si no quiere cambiar el campo:");
-        Consola.cambiarTexto("Nombre", modificado.getNombre());
-        Consola.cambiarTexto("Apellido", modificado.getApellido());
-        Consola.cambiarTexto("Teléfono", modificado.getTelefono());
-        Consola.cambiarTexto("Email", modificado.getEmail());
-        Consola.cambiarTexto("Dirección", modificado.getDireccion());
-        boolean modificado2= servicio.modificar(modificado);
+        String nombre =Consola.cambiarTexto("Nombre", modificado.getNombre());
+        String apellido= Consola.cambiarTexto("Apellido", modificado.getApellido());
+        String telefono= Consola.cambiarTexto("Teléfono", modificado.getTelefono());
+        String mail= Consola.cambiarTexto("Email", modificado.getEmail());
+        String direccion= Consola.cambiarTexto("Dirección", modificado.getDireccion());
+        Cliente cambios = new Cliente(modificado.getId(), nombre, apellido, modificado.getDni(), modificado.isActivo(),
+                telefono, mail, direccion);
+        boolean modificado2= servicio.modificar(cambios);
         if(modificado2)
         {
             System.out.println("Cliente modificado.");

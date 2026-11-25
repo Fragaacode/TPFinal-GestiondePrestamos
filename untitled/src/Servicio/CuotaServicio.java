@@ -13,8 +13,8 @@ private CuotaDAO dao;
     private ArrayList<Cuota> cuotas;
 
     public CuotaServicio()throws SQLException {
-        this.dao = dao;
-        this.cuotas = cuotas;
+        this.dao = new CuotaDAO();
+        this.cuotas =  new ArrayList<>();
         cargarcuotas();
     }
 

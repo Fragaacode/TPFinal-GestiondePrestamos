@@ -20,13 +20,13 @@ public class MenuEmpleado {
     public void mostrar() {
         int opcion;
         do {
-            System.out.println("\n===== GESTIÓN DE EMPLEADOS =====");
+            System.out.println("\n------------GESTIÓN DE EMPLEADOS ------------");
             System.out.println("1. Alta de empleado");
             System.out.println("2. Modificar empleado");
             System.out.println("3. Baja de empleado");
             System.out.println("4. Consultar empleado por id");
             System.out.println("5. Listar empleados");
-            System.out.println("6. Listar empleados dados de baja");
+            System.out.println("6. Listar empleados Inactivos");
             System.out.println("7. Reactivar empleado");
             System.out.println("8. Eliminar empleado definitivamente");
             System.out.println("9- Buscar empleado por el id");

@@ -50,8 +50,6 @@ public Rol getRol()
 
     @Override
     public String toString() {
-        return super.toString()+" Comision=" + comision +
-                ", cantidadSolicitudes=" + cantidadSolicitudes +
-                '}';
+        return super.toString() + " | Solicitudes: " + cantidadSolicitudes;
     }
 }

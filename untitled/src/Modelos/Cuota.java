@@ -108,15 +108,15 @@ public class Cuota {
 
     @Override
     public String toString() {
-        return "Cuota{" +
-                "idCuota=" + idCuota +
-                ", idPrestamo=" + idPrestamo +
-                ", numero=" + numero +
-                ", monto=" + monto +
-                ", fechaVencimiento=" + fechaVencimiento +
-                ", pagada=" + pagada +
-                ", fechaPago=" + fechaPago +
-                ", activo=" + activo +
-                '}';
+        String estadoPago;
+        if (pagada) {
+            estadoPago = "PAGADA el " + fechaPago;
+        } else if (estaVencida()) {
+            estadoPago = "VENCIDA";
+        } else {
+            estadoPago = "PENDIENTE";
+        }
+        return String.format("Cuota #%-3d | Prestamo #%-3d | N° %2d | $%,12.2f | Vence %s | %s",
+                idCuota, idPrestamo, numero, monto, fechaVencimiento, estadoPago);
     }
 }

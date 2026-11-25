@@ -145,15 +145,8 @@ public double valorCuota()
 
     @Override
     public String toString() {
-        return "Prestamo{" +
-                "idPrestamo=" + idPrestamo +
-                ", cliente=" + cliente +
-                ", idAsesor=" + idAsesor +
-                ", montoSolicitado=" + montoSolicitado +
-                ", cantidadCuotas=" + cantidadCuotas +
-                ", fechaSolicitud=" + fechaSolicitud +
-                ", estado=" + estado +
-                ", activo=" + activo +
-                '}';
+        return String.format("Prestamo #%-3d | %-10s %-10s (DNI %s) | $%,13.2f en %2d cuotas | Total $%,13.2f | %-9s | %s",
+                idPrestamo, cliente.getNombre(), cliente.getApellido(), cliente.getDni(),
+                montoSolicitado, cantidadCuotas, montototal(), estado, fechaSolicitud);
     }
 }

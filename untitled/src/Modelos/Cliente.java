@@ -53,9 +53,7 @@ public class Cliente extends Persona {
 
     @Override
     public String toString() {
-        return super.toString()+ "telefono='" + telefono + '\'' +
-                ", email='" + email + '\'' +
-                ", direccion='" + direccion + '\'' +
-                '}';
+        return String.format("ID %-3d | %-10s %-10s | DNI %-9s | Tel %-11s | %-28s | %s",
+                getId(), getNombre(), getApellido(), getDni(), telefono, email, isActivo() ? "ACTIVO" : "INACTIVO");
     }
 }

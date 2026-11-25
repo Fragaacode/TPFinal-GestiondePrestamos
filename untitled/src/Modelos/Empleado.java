@@ -64,11 +64,8 @@ public abstract class Empleado extends Persona {
 
     @Override
     public String toString() {
-        return super.toString()+
-                "usuario='" + usuario + '\'' +
-                ", contraseña='" + contraseña + '\'' +
-                ", sueldoBase=" + sueldoBase +
-                '}';
+        return String.format("ID %-3d | %-13s | %-10s %-10s | DNI %-9s | Usuario %-9s | Contraseña %-9s | Base $%,13.2f | %s",
+                getId(), getRol(), getNombre(), getApellido(), getDni(), usuario,contraseña, sueldoBase, isActivo() ? "ACTIVO" : "INACTIVO");
     }
 
 }

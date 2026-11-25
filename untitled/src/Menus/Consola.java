@@ -51,9 +51,14 @@ public class Consola {
     }
 
     public static void mostrarLista(List<?> lista) {
+        System.out.println("-".repeat(110));
+        if (lista.isEmpty()) {
+            System.out.println("No hay registros.");
+        }
         for (Object elemento : lista) {
             System.out.println(elemento);
         }
+        System.out.println("-".repeat(110));
         System.out.println("Total: " + lista.size());
     }
 }
